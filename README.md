@@ -73,3 +73,4 @@
                 > 참고 : 단건으로 지정한 메서드를 호출하면 스프링 데이터 JPA는 내부에서 JPQL의 Query.getSingleResult() 메서드를 호출한다.<br>
                 이 메서드를 호출 했을 때 조회 결과가 없으면 `javax.persistence.NoResultException` 예외가 발생하는데 개발자 입장에서 <br>
                 다루기 상당히 불편. 스프링 데이터 JPA는 단건 조회시 해당 예외가 발생하면 예외를 무시하고 null을 반환
+    * 순수 JPA 페이징과 정렬
