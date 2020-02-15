@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
@@ -31,5 +32,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     List<Member> findListByUsername(String username);
 
-    Member findMebmerByUsername(String username);
+    Member findMemberByUsername(String username);
+
+    Optional<Member> findOptionalByUsername(String username);
+
+
 }

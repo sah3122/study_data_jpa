@@ -62,4 +62,14 @@
     * 파라미터 바인딩
         * 위치 기반 (사용하지 말것)
         * 이름 기반            
-        
+    * 반환 타입
+        * 스프링 데이터 JPA는 유연한 반환 타입 지원
+        * 조회 결과가 많거나 없으면 ?
+            * 컬렉션 
+                * 결과 없음 : 빈 컬렉션 반환
+            * 단건 조회
+                * 결과 없음 : null 반환    
+                * 결과가 2건 이상 :  `javax.persistence.NonUniqueResultException` 발생
+                > 참고 : 단건으로 지정한 메서드를 호출하면 스프링 데이터 JPA는 내부에서 JPQL의 Query.getSingleResult() 메서드를 호출한다.<br>
+                이 메서드를 호출 했을 때 조회 결과가 없으면 `javax.persistence.NoResultException` 예외가 발생하는데 개발자 입장에서 <br>
+                다루기 상당히 불편. 스프링 데이터 JPA는 단건 조회시 해당 예외가 발생하면 예외를 무시하고 null을 반환

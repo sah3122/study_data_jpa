@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -147,5 +148,20 @@ class MemberRepositoryTest {
         for (Member member : members) {
             System.out.println("member = " + member);
         }
+    }
+
+    @Test
+    void returnType() {
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("AAA", 20);
+
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        List<Member> aaa = memberRepository.findListByUsername("AAA"); // Null이 아닌 Empty Collection이 반환 된다.
+
+        Member findMember = memberRepository.findMemberByUsername("AAA"); // 존재 하지 않으면 Null이 반환 된다.
+
+        Optional<Member> aaa1 = memberRepository.findOptionalByUsername("AAA");
     }
 }
