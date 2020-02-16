@@ -74,3 +74,37 @@
                 이 메서드를 호출 했을 때 조회 결과가 없으면 `javax.persistence.NoResultException` 예외가 발생하는데 개발자 입장에서 <br>
                 다루기 상당히 불편. 스프링 데이터 JPA는 단건 조회시 해당 예외가 발생하면 예외를 무시하고 null을 반환
     * 순수 JPA 페이징과 정렬
+    * 스프링 데이터 JPA 페이징과 정렬
+        * *페이징과 정렬 파라미터*
+            * org.springframework.data.domain.Sort : 정렬 기능
+            * org.springframework.data.domain.Pageable : 페이징 기능 (내부에 Sort 포함)
+        * *특별한 반환 타입*
+            * org.springframework.data.domain.Page : 추가 count 쿼리 결과를 포함하는 페이징
+            * org.springframework.data.domain.Slice : 추가 count 쿼리 없이 다음 페이지만 확인 가능(내부적으로 limit + 1조회)
+            * List (자바 컬렉션): 추가 count 쿼리 없이 결과만 반환
+        * Pageable 생성
+            ```java
+              PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+            ```
+          * PageRequest 생성자의 첫번째 파라미터는 현재 페이지, 두번째 파라미터는 조회할 데이터수, 정렬 정보 입력가능, 페이지는 0부터 시작
+        * Count Query 분리
+            * 복잡한 Join Query가 실행될 때 불필요한 Join Query를 Count Query에서 실행하지 않도록 최적화
+            ```java
+              @Query(value = “select m from Member m”,
+               countQuery = “select count(m.username) from Member m”)
+              Page<Member> findMemberAllCountBy(Pageable pageable);
+            ```
+        * Top, First 등의 쿼리도 지원한다.
+            * List<Member> findTop3ByXXX();
+        * 페이지를 유지하면서 엔티티를 DTO로 변환하기
+            ```java
+              Page<Member> page = memberRepository.findByAge(10, pageRequest);
+              Page<MemberDto> dtoPage = page.map(m -> new MemberDto());
+            ```   
+        * 정리
+            * Page
+            * Slice (Count X) 추가로 limit + 1 을 조회한다. 그래서 다음 페이지 여부를 확인(최근 모바일 리스트 생각해보면 됨)
+            * List (Count X)
+            * 카운트 쿼리 분리(복잡한 SQL에서 사용, 데이터는 Left Join, 카운트는 Left Join 안해도됨)
+                * 실무에서 매우 중요함.
+            > 참고 : 전체 count 쿼리는 매우 무겁다.
