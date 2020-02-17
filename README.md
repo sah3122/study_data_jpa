@@ -108,3 +108,14 @@
             * 카운트 쿼리 분리(복잡한 SQL에서 사용, 데이터는 Left Join, 카운트는 Left Join 안해도됨)
                 * 실무에서 매우 중요함.
             > 참고 : 전체 count 쿼리는 매우 무겁다.
+    * 벌크성 수정 쿼리
+        * 벌크성 수정, 삭제 쿼리는 @Modifying 어노테이션을 사용
+            * 사용하지 않으면 `org.hibernate.hql.internal.QueryExecutionRequestException: Not supported for DML operations` 에러 발생
+        * 벌크성 쿼리를 실행하고 나서 영속성 컨텍스트 초기화: `@Modifying(clearAutomatically = true)` default false
+            * 이 옵션 없이 findById와 같은 조회를 하면 영속성 컨텍스트에 과거 값이 남아서 뭊제가 될 수 있다.
+        > 참고 : 벌크 연산은 영속성 컨텍스트를 무시하고 실행, 영속성 컨텍스트에 있는 엔티티의 상태와 DB에 엔티티 상태가 달라질 수 있다. <br> 
+          권장 방안 <br>
+          1. 영속성 컨텍스트에 엔티티가 없는 상태에서 벌크 연산을 먼저 실행한다.
+          2. 부득이하게 영속성 컨텍스트에 엔티티가 있으면 벌크 연산 직후 영속성 컨텍스트를 초기화 한다. 
+        
+           

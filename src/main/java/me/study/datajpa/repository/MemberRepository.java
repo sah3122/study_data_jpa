@@ -6,9 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +33,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<MemberDto> findMemberDto();
 
     @Query("select m from Member m where m.username in :names")
-    List<Member> findByNames(@Param("names") List<String> names);
+    List<Member> findByNames(@Param("names") Collection<String> names);
 
     List<Member> findListByUsername(String username);
 
@@ -44,5 +46,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     //Slice<Member> findByAge(int age, Pageable pageable);
     //List<Member> findByAge(int age, Pageable pageable);
 
-
+    //JPQL 을 사용할때 entityManager 는 flush를 한번 한 후 JPQL을 실행 한다.
+    @Modifying(clearAutomatically = true)
+    @Query("update Member m set m.age = m.age + 1 where m.age >= :age")
+    int bulkAgePlus(@Param("age") int age);
 }
