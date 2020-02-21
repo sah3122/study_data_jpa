@@ -128,4 +128,14 @@
             * 사실상 패치 조인(Fetch Join)의 간편 버전
             * Left Outer Join 사용
         * Named Query 사용
-                  
+    * JPA Hint & Lock
+        * JPA Hint
+            * JPA 쿼리 힌트(SQL 힌트가 아니라 JPA 구현체에게 제공되는 힌트)
+            * @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
+            * 페이징 예제  
+            @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true", forCounting=true))
+            * forCounting : 반환 타입으로 Page 인터페이스를 적용하면 추가로 호출하는 페이징을 위한 count 쿼리도 쿼리 힌트 적용(기본값 true )
+            * Lock
+                * org.springframework.data.jpa.repository.Lock 어노테이션을 사용
+                * JPA가 제공하는 락은 JPA 책 16.1 트랜잭션과 락 절을 참고
+                              
