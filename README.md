@@ -156,3 +156,41 @@
         > 참고 : 항상 사용자 정의 리포지토리가 필요한 것은 아니다. 그냥 임의의 리포지토리를 만들어도 된다.  
             예를 들면 MemberQueryRepository를 인터페이스가 아닌 클래스로 만들고 스프링 빈으로 등록해서 그냥 직접 사용해도 된다.  
             물론 이 경우 스프링 데이터 JPA와는 아무런 관계 없이 별도로 동작한다.
+    * Auditing
+        * 엔티티를 생성, 변경할 때 변경한 사람과 시간을 추적하고 싶으면?
+            * 등록일
+            * 수정일
+            * 등록자
+            * 수정자
+        * 순수 JPA 사용
+            * PrePersist, PreUpdate
+            * PostPersist, PostUpdate
+        * 스프링 데이터 JPA 사용
+            * 설정
+                * @EnableJpaAuditing -> 스프링 부트 설정 클래스에 적용
+                * @EntityListeners(AuditingEntityListener.class) -> 엔티티에 적용
+            * 사용 어노테이션
+                * @CreatedDate
+                * @LastModifiedDate
+                * @CreatedBy
+                * @LastModifiedBy
+            * 등록자, 수정자를 처리하려면 AuditorAware 스프링 빈 등록
+                * ```java
+                      @Bean
+                      public AuditorAware<String> auditorProvider() {
+                       return () -> Optional.of(UUID.randomUUID().toString());
+                      }
+                  ```
+                * 실무에선 세션정보나 스프링 시큐리티 로그인 정보에서 ID를 받는다.
+        > 참고 : 실무에서 대부분의 엔티티는 등록시간, 수정시간이 필요하지만 등록자, 수정자는 필요하지 않을 수 도 있다.  
+        그래서 다음과 같이 Base 타입을 분리 (BaseTimeEntity, BaseEntity)하고 원하는 타입을 선택해서 상속한다.
+    
+        > 참고 : 저장시점에 등록일, 등록자는 물론 수정일, 수정자도 같이 등록하는걸 추천. 저장시점에 저장데이터만 등록하고 싶으면 `@EnableJpaAuditing(modifyOnCreate = false)` 옵션 사용
+    
+        * 전체 적용
+            * `@EntityListeners(AuditingEntityListener.class) ` 를 생략하고 스프링 데이터 JPA가 제공하는 이벤트를 엔티티에 전체 적용하려면 orm.xml 등록
+            
+
+         
+                
+                
