@@ -226,6 +226,23 @@
                 직접 PageRequest(Pageable 구현체)를 생성해서 리포지토리에 넘긴다. 물론 응답값도 Page 대신에 직접 만들어서 제공해야 한다.
                 2. spring.data.web.pageable.one-indexed-parameters 를 true 로 설정한다. 그런데 이 방법은  
                 web에서 page 파라미터를 -1 처리 할 뿐이다. 따라서 응답값인 Page 에 모두 0 페이지 인덱스를 사용하는 한계가 있다
+* 스프링 데이터 JPA 분석
+    * 스프링 데이터 JPA가 제공하는 공통 인터페이스의 구현체
+    * org.springframework.data.jpa.repository.support.SimpleJpaRepository
+        * @Repository적용 : JPA 예외를 스프링이 추상화한 예외로 변환
+        * @Transactional : 트랜잭션 적용
+            * JPA의 모든 변경은 트랜잭션 안에서 동작
+            * 스프링 데이터 JPA는 변경(등록, 수정, 삭제)메서드를 트랜잭션 처리
+            * 서비스 계층에서 트랜잭션을 시작하지 않으면 리파지토리에서 트랜잭션 시작.
+            * 서비스 계층에서 트랜잭션을 시작하면 리파지토리는 해당 트랜잭션을 전파 받아서 사용.
+            * 그래서 스프링 데이터 JPA를 사용할 때 트랜잭션이 없어도 데이터 등록, 변경이 가능(실제론 트랜잭션이 리포지토리 계층에 걸려 있음)
+    * @Transactional(readonly = true)
+        * 데이터를 단순히 조회만 하고 변경하지 않는 트랜잭션에서 readOnly = true 옵션을 사용하면 flush를 생략햇 약간의 성능이 향상
+    * Save() 메서드
+        * 새로운 엔티티면 저장(persist)
+        * 새로운 엔티티가 아니면 병합(merge)
+        * 병합시 조회 쿼리를 한번 더 날리기 때문에 Ditry Checking을 사용하는것이 좋다.
+            
                 
 
          
