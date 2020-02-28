@@ -254,7 +254,11 @@
             Persistable 를 사용해서 새로운 엔티티 확인 여부를 직접 구현하게는 효과적이다.
             > 참고로 등록시간( @CreatedDate )을 조합해서 사용하면 이 필드로 새로운 엔티티 여부를 편리하게 확인할
             수 있다. (@CreatedDate에 값이 없으면 새로운 엔티티로 판단)
-                
+* 나머지 기능들
+    * Specifications (명세)
+        * 책 도메인 주도 설께(Domain Driven Design)는 Specification이라는 개념을 소개,  
+        스프링 데이터 JPA는 JPA Criteria를 활용해서 이 개념을 사용할 수 있도록 지원
+        * **실무에선 사용하지 않는다.**                
 
          
                 

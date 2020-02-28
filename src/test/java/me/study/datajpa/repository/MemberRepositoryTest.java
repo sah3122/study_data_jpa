@@ -273,4 +273,21 @@ class MemberRepositoryTest {
     public void callCustom() {
         List<Member> memberCustom = memberRepository.findMemberCustom();
     }
+
+    @Test
+    void specBasic() {
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member member1 = new Member("m1", 0, teamA);
+        Member member2 = new Member("m2", 0, teamA);
+
+        em.persist(member1);
+        em.persist(member2);
+
+        em.flush();
+        em.clear();
+
+        memberRepository.findAll();
+    }
 }
