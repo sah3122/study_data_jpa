@@ -278,5 +278,63 @@
                 * 다른 속성은 정확한 매칭( = )만 지원
         * 정리
             * 실무에서 사용하기에는 매칭 조건이 너무 단순하고, LEFT 조인이 안됨
-                
-                
+    * Projections
+        * 엔티티 대신에 DTO를 편리하게 조회할 때 사용  
+          전체 엔티티가 아니라 회원 이름만 조회하는 경우 
+          ```java
+              public interface UsernameOnly {
+               String getUsername();
+              }
+          ``` 
+        * 조회할 엔티티의 필드를 getter형식으로 지정하면 해당 필드만 선택해서 조회  
+           ```java
+               public interface MemberRepository ... {
+                List<UsernameOnly> findProjectionsByUsername(String username);
+               }
+            ``` 
+        * 메서드 이름은 자유, 반환 타입으로 인지      
+        * 인터페이스 기반 Closed Projections
+            * 프로퍼티 형식(getter)의 인터페이스를 제공하면, 구현체는 스프링 데이터 JPA가 제공
+                ```java
+                  public interface UsernameOnly {
+                   String getUsername();
+                  }
+                ```
+        * 인터페이스 기반 Open Proejctions
+            * 다음과 같이 스프링의 SpEL 문법도 지원
+                ```java
+                  public interface UsernameOnly {
+                   @Value("#{target.username + ' ' + target.age + ' ' + target.team.name}")
+                   String getUsername();
+                  }
+                ```
+              * 단! 이렇게 SpEL문법을 사용하면, DB에서 엔티티 필드를 다 조회해온 다음에 계산한다! 따라서 JPQL SELECT 절 최적화가 안된다.
+        * 클래스 기반 Projection
+            * 다음과 같이 인터페이스가 아닌 구체적인 DTO 형식도 가능
+                * 생성자의 파라미터 이름으로 매칭
+                ```java
+                  public class UsernameOnlyDto {
+                   private final String username;
+                   public UsernameOnlyDto(String username) {
+                      this.username = username;
+                   }
+                   public String getUsername() {
+                      return username;
+                   }
+                  }
+                ```
+        * 동적 Projections
+            * 다음과 같이 Generic type을 주면, 동적으로 프로젝션 데이터 번경 가능
+                ```java
+                <T> List<T> findProjectionsByUsername(String username, Class<T> type);
+                ```
+        * 주의
+            * 프로젝션 대상이 root 엔티티면, JPQL SELECT 절 최적화 가능
+            * 프로젝션 대상이 ROOT가 아니면
+                * LEFT OUTER JOIN 처리
+                * 모든 필드를 SELECT해서 엔티티로 조회한 다음에 계산
+        * 정리
+            * 프로젝션 대상이 root 엔티티면 유용하다.
+            * 프로젝션 대상이 root 엔티티를 넘어가면 JPQL SELECT 최적화가 안된다!
+            * 실무의 복잡한 쿼리를 해결하기에는 한계가 있다.
+            * 실무에서는 단순할 때만 사용하고, 조금만 복잡해지면 QueryDSL을 사용하자      
